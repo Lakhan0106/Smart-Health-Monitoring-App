@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { MapPin, Navigation, AlertCircle, CheckCircle, Users, Heart, Clock, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -19,15 +19,13 @@ interface AssignedPatient {
 
 interface LiveLocationMapProps {
   assignedPatients: AssignedPatient[];
-  center: { lat: number; lng: number };
 }
 
 // Google Maps Embed URL - Always visible map
 const GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d484284.21978160436!2d77.56136557319336!3d18.507630121952896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1733879888130!5m2!1sen!2sin";
 
-export function LiveLocationMap({ assignedPatients, center }: LiveLocationMapProps) {
+export function LiveLocationMap({ assignedPatients }: LiveLocationMapProps) {
   const [patientLocations, setPatientLocations] = useState<Map<string, LocationData>>(new Map());
-  const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
     // Set initial locations from props
@@ -77,19 +75,6 @@ export function LiveLocationMap({ assignedPatients, center }: LiveLocationMapPro
       };
     }
   }, [assignedPatients]);
-
-  // Show error only if there's a critical error
-  if (mapError) {
-    return (
-      <div className="bg-white rounded-xl shadow-md h-96 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <p className="text-red-600 font-medium">Map Loading Error</p>
-          <p className="text-gray-500 text-sm">{mapError}</p>
-        </div>
-      </div>
-    );
-  }
 
   const patientsWithLocations = assignedPatients.filter(patient =>
     patientLocations.has(patient.id)
